@@ -1,0 +1,11 @@
+language: cpp
+name: "Qt5 base for travis osx"
+os: osx
+compiler: clang
+install:
+  - build_qt.sh
+  - pip install --user awscli
+  - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
+  - aws --version
+script:
+  - aws s3 cp $TRAVIS_BUILD_DIR/qtbase-*.tgz s3://$AWS_BUCKET/artifacts/qtbase-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
