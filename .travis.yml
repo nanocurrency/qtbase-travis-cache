@@ -3,7 +3,7 @@ name: "Qt5 base for travis osx"
 os: osx
 compiler: clang
 install:
-  - build_qt.sh
+  - ./build_qt.sh
   - pip install --user awscli
   - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
   - aws --version
