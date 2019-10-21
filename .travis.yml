@@ -1,11 +1,57 @@
 language: cpp
-name: "Qt5 base for travis osx"
-os: osx
-compiler: clang
-install:
-  - ./build_qt.sh
-  - pip install --user awscli
-  - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
-  - aws --version
-script:
-  - aws s3 cp $TRAVIS_BUILD_DIR/qtbase-*.tgz s3://$AWS_BUCKET/artifacts/qtbase-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+
+jobs:
+  include:
+    - name: "Qt5 base for travis osx"
+      os: osx
+      compiler: clang
+      install:
+        - ./build_qt.sh
+        - pip install --user awscli
+        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
+        - aws --version
+      script:
+        - aws s3 cp $TRAVIS_BUILD_DIR/qtbase-*.tgz s3://$AWS_BUCKET/artifacts/qtbase-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+    
+    - name: "RocksDB static OSX"
+      os: osx
+      compiler: clang
+      env:
+        - INSTALL_PATH='/tmp/rocksdb'
+        - RocksDBVersion='6.3.6'
+      install:
+        - ./build_rocksdb.sh
+        - pip install --user awscli
+        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
+        - aws --version
+      script:
+        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Darwin-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Darwin-clang-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+
+    - name: "RocksDB static ubuntu gcc"
+      os: linux
+      distro: xenial
+      compiler: gcc
+      env:
+        - INSTALL_PATH='/tmp/rocksdb'
+        - RocksDBVersion='6.3.6'
+      install:
+        - ./build_rocksdb.sh
+        - pip install --user awscli
+        - export PATH="$HOME/Library/Python/2.7/bin:$PATH;"
+        - aws --version
+      script:
+        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Linux-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Linux-gcc-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+    - name: "RocksDB static ubuntu clang"
+      os: linux
+      distro: xenial
+      compiler: clang
+      env:
+        - INSTALL_PATH='/tmp/rocksdb'
+        - RocksDBVersion='6.3.6'
+      install:
+        - ./build_rocksdb.sh
+        - pip install --user awscli
+        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
+        - aws --version
+      script:
+        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Linux-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Linux-clang-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
