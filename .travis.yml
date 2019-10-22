@@ -9,14 +9,14 @@ stages:
 jobs:
   include:
     - stage: qtbase
-      if: commit_message =~ /Qt/
+      if: commit_message =~ /qt/
       name: "Qt5 base for travis osx"
       os: osx
       compiler: clang
     
     - stage: rocksdb
       name: "RocksDB static OSX"
-      if: commit_message =~ /RocksDB/
+      if: commit_message =~ /rocksdb/
       os: osx
       compiler: clang
       env:
@@ -24,7 +24,7 @@ jobs:
         - RocksDBVersion='6.3.6'
     
     - name: "RocksDB static ubuntu gcc"
-      if: commit_message =~ /RocksDB/
+      if: commit_message =~ /rocksdb/
       os: linux
       distro: xenial
       compiler: gcc
@@ -32,7 +32,7 @@ jobs:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
     - name: "RocksDB static ubuntu clang"
-      if: commit_message =~ /RocksDB/
+      if: commit_message =~ /rocksdb/
       os: linux
       distro: xenial
       compiler: clang
@@ -60,10 +60,11 @@ jobs:
       script:
         - tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$compiler-$boostVersion.tgz $BOOST_ROOT
 env:
-  - STAGE_NAME=`echo "$TRAVIS_BUILD_STAGE_NAME" | awk '{print tolower($0)}'`
+  global:
+    - STAGE_NAME=`echo "$TRAVIS_BUILD_STAGE_NAME" | awk '{print tolower($0)}'`
 install:
   - if [[ $STAGE_NAME =~ "qtbase" ]]; then ./build_qt.sh; fi;
-  - if [[ $STAGE_NAME =~ "rocksdb" ]]; then ././build_rocksdb.sh; fi;
+  - if [[ $STAGE_NAME =~ "rocksdb" ]]; then ./build_rocksdb.sh; fi;
   - if [[ $STAGE_NAME =~ "boost" ]]; then if [[ $compiler =~ "clang" ]]; then ./bootstrap_boost.sh -m -c -B $boostVersion; else ./bootstrap_boost.sh -m -B $boostVersion; fi; fi
   - pip install --user awscli
   - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
