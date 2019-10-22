@@ -3,6 +3,7 @@ language: cpp
 stages:
   - qtbase
   - rocksdb
+  - boost
 
 jobs:
   include:
@@ -11,13 +12,6 @@ jobs:
       name: "Qt5 base for travis osx"
       os: osx
       compiler: clang
-      install:
-        - ./build_qt.sh
-        - pip install --user awscli
-        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
-        - aws --version
-      script:
-        - aws s3 cp $TRAVIS_BUILD_DIR/qtbase-*.tgz s3://$AWS_BUCKET/artifacts/qtbase-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
     
     - stage: rocksdb
       name: "RocksDB static OSX"
@@ -27,14 +21,7 @@ jobs:
       env:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
-      install:
-        - ./build_rocksdb.sh
-        - pip install --user awscli
-        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
-        - aws --version
-      script:
-        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Darwin-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Darwin-clang-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-
+    
     - name: "RocksDB static ubuntu gcc"
       if: commit_message =~ /RocksDB/
       os: linux
@@ -43,13 +30,6 @@ jobs:
       env:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
-      install:
-        - ./build_rocksdb.sh
-        - pip install --user awscli
-        - export PATH="$HOME/Library/Python/2.7/bin:$PATH;"
-        - aws --version
-      script:
-        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Linux-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Linux-gcc-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
     - name: "RocksDB static ubuntu clang"
       if: commit_message =~ /RocksDB/
       os: linux
@@ -58,10 +38,34 @@ jobs:
       env:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
-      install:
-        - ./build_rocksdb.sh
-        - pip install --user awscli
-        - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
-        - aws --version
+    
+    - stage: boost
+      name: "boost 1.67 ubuntu gcc"
+      if: commit_message =~ /boost/
+      os: linux
+      distro: xenial
+      compiler: gcc
+      env:
+        - BOOST_ROOT='/tmp/boost'
+        - boostVersion='1.67'
+    - name: "boost 1.67 ubuntu clang"
+      if: commit_message =~ /boost/
+      os: linux
+      distro: xenial
+      compiler: clang
+      env:
+        - BOOST_ROOT='/tmp/boost'
+        - boostVersion='1.67'
       script:
-        - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Linux-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Linux-clang-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+        - tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$compiler-$boostVersion.tgz $BOOST_ROOT
+env:
+  - STAGE_NAME=`echo "$TRAVIS_BUILD_STAGE_NAME" | awk '{print tolower($0)}'`
+install:
+  - if [[ $STAGE_NAME =~ "qtbase" ]]; then ./build_qt.sh; fi;
+  - if [[ $STAGE_NAME =~ "rocksdb" ]]; then ././build_rocksdb.sh; fi;
+  - if [[ $STAGE_NAME =~ "boost" ]]; then if [[ $compiler =~ "clang" ]]; then ./bootstrap_boost.sh -m -c -B $boostVersion; else ./bootstrap_boost.sh -m -B $boostVersion; fi; fi
+  - pip install --user awscli
+  - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
+  - aws --version
+script:
+  - aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$compiler-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
