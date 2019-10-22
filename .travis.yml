@@ -1,8 +1,14 @@
 language: cpp
 
+stages:
+  - qtbase
+  - rocksdb
+
 jobs:
   include:
-    - name: "Qt5 base for travis osx"
+    - stage: qtbase
+      if: commit_message =~ /Qt/
+      name: "Qt5 base for travis osx"
       os: osx
       compiler: clang
       install:
@@ -13,7 +19,9 @@ jobs:
       script:
         - aws s3 cp $TRAVIS_BUILD_DIR/qtbase-*.tgz s3://$AWS_BUCKET/artifacts/qtbase-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
     
-    - name: "RocksDB static OSX"
+    - stage: rocksdb
+      name: "RocksDB static OSX"
+      if: commit_message =~ /RocksDB/
       os: osx
       compiler: clang
       env:
@@ -28,6 +36,7 @@ jobs:
         - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Darwin-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Darwin-clang-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 
     - name: "RocksDB static ubuntu gcc"
+      if: commit_message =~ /RocksDB/
       os: linux
       distro: xenial
       compiler: gcc
@@ -42,6 +51,7 @@ jobs:
       script:
         - aws s3 cp $TRAVIS_BUILD_DIR/RocksDB-Linux-*.tgz s3://$AWS_BUCKET/artifacts/RocksDB-Linux-gcc-$RocksDBVersion.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
     - name: "RocksDB static ubuntu clang"
+      if: commit_message =~ /RocksDB/
       os: linux
       distro: xenial
       compiler: clang
