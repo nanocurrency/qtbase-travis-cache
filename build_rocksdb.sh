@@ -37,4 +37,4 @@ if [[ ! -d "$INSTALL_PATH/lib" ]]; then
 	PORTABLE=1 make static_lib && make install
 fi
 
-tar -czf $TRAVIS_BUILD_DIR/RocksDB-$OS-$RocksDBVersion.tgz $INSTALL_PATH
+tar -czf $TRAVIS_BUILD_DIR/rocksdb-$OS-$RocksDBVersion.tgz $INSTALL_PATH

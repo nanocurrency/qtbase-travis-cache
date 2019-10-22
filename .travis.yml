@@ -31,14 +31,6 @@ jobs:
       env:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
-    - name: "RocksDB static ubuntu clang"
-      if: commit_message =~ /rocksdb/
-      os: linux
-      distro: xenial
-      compiler: clang
-      env:
-        - INSTALL_PATH='/tmp/rocksdb'
-        - RocksDBVersion='6.3.6'
     
     - stage: boost
       name: "boost 1.67 ubuntu gcc"
