@@ -5,7 +5,6 @@ stages:
   - rocksdb
   - boost
 
-
 jobs:
   include:
     - stage: qtbase
@@ -41,8 +40,6 @@ jobs:
       env:
         - BOOST_ROOT='/tmp/boost'
         - boostVersion='1.67'
-      script:
-        - tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$TRAVIS_COMPILER-$boostVersion.tgz $BOOST_ROOT
     - name: "boost 1.67 ubuntu clang"
       if: commit_message =~ /boost/
       os: linux
@@ -51,15 +48,13 @@ jobs:
       env:
         - BOOST_ROOT='/tmp/boost'
         - boostVersion='1.67'
-      script:
-        - tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$TRAVIS_COMPILER-$boostVersion.tgz $BOOST_ROOT
 env:
   global:
     - STAGE_NAME=`echo "$TRAVIS_BUILD_STAGE_NAME" | awk '{print tolower($0)}'`
 install:
   - if [[ $STAGE_NAME =~ "qtbase" ]]; then ./build_qt.sh; fi;
   - if [[ $STAGE_NAME =~ "rocksdb" ]]; then ./build_rocksdb.sh; fi;
-  - if [[ $STAGE_NAME =~ "boost" ]]; then if [[ $TRAVIS_COMPILER =~ "clang" ]]; then ./bootstrap_boost.sh -m -c -B $boostVersion; else ./bootstrap_boost.sh -m -B $boostVersion; fi; fi
+  - if [[ $STAGE_NAME =~ "boost" ]]; then if [[ $TRAVIS_COMPILER =~ "clang" ]]; then ./bootstrap_boost.sh -m -c -B $boostVersion; else ./bootstrap_boost.sh -m -B $boostVersion; fi; tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$TRAVIS_COMPILER-$boostVersion.tgz $BOOST_ROOT; fi
   - pip install --user awscli
   - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
   - aws --version

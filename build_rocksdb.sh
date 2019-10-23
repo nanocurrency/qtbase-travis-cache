@@ -24,17 +24,16 @@ done
 
 set -o errexit
 set -o xtrace
-if [[ ! -d "$INSTALL_PATH/lib" ]]; then
-	cd /tmp
-	git clone https://github.com/facebook/rocksdb.git src
-	cd src
-	git checkout -qf "v$RocksDBVersion"
-	export ROCKSDB_DISABLE_LZ4=1
-	export ROCKSDB_DISABLE_SNAPPY=1
-	export ROCKSDB_DISABLE_ZSTD=1
-	export ROCKSDB_DISABLE_BZIP=1
-	# build rocksdb (same as we do for gcc/clang in ci linux)
-	PORTABLE=1 make static_lib && make install
-fi
+
+cd /tmp
+git clone https://github.com/facebook/rocksdb.git src
+cd src
+git checkout -qf "v$RocksDBVersion"
+export ROCKSDB_DISABLE_LZ4=1
+export ROCKSDB_DISABLE_SNAPPY=1
+export ROCKSDB_DISABLE_ZSTD=1
+export ROCKSDB_DISABLE_BZIP=1
+# build rocksdb (same as we do for gcc/clang in ci linux)
+PORTABLE=1 make static_lib && make install
 
 tar -czf $TRAVIS_BUILD_DIR/rocksdb-$OS-$RocksDBVersion.tgz $INSTALL_PATH

@@ -23,18 +23,17 @@ done
 
 set -o errexit
 set -o xtrace
-if [[ ! -d "$prefix/lib/cmake" ]]; then
-	cd /tmp
-	git clone https://code.qt.io/qt/qt5.git
-	cd qt5
-	git checkout -qf $version
-	perl init-repository --module-subset=qtbase
-	./configure -prefix $prefix -release -opensource \
-    	        -confirm-license -system-zlib -qt-libpng -silent \
-        	    -qt-libjpeg -qt-freetype -qt-pcre -nomake examples \
-            	-nomake tests -rpath -pkg-config -dbus-runtime
-	make -j2
-	make install
-fi
+
+cd /tmp
+git clone https://code.qt.io/qt/qt5.git
+cd qt5
+git checkout -qf $version
+perl init-repository --module-subset=qtbase
+./configure -prefix $prefix -release -opensource \
+   	        -confirm-license -system-zlib -qt-libpng -silent \
+       	    -qt-libjpeg -qt-freetype -qt-pcre -nomake examples \
+           	-nomake tests -rpath -pkg-config -dbus-runtime
+make -j2
+make install
 
 tar -czf $TRAVIS_BUILD_DIR/qtbase-$version.tgz $prefix
