@@ -41,6 +41,8 @@ jobs:
       env:
         - BOOST_ROOT='/tmp/boost'
         - boostVersion='1.67'
+      script:
+        - tar -czf $TRAVIS_BUILD_DIR/$STAGE_NAME-$TRAVIS_COMPILER-$boostVersion.tgz $BOOST_ROOT
     - name: "boost 1.67 ubuntu clang"
       if: commit_message =~ /boost/
       os: linux
