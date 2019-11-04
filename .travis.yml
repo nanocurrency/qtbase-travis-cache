@@ -53,7 +53,7 @@ jobs:
         - boostVersion='1.67'
     - name: "boost 1.67 macos"
       if: commit_message =~ /boost/
-      os: macos
+      os: osx
       compiler: clang
       env:
         - BOOST_ROOT='/tmp/boost'
