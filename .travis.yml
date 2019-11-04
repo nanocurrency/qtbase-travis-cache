@@ -12,6 +12,8 @@ jobs:
       name: "Qt5 base for travis osx"
       os: osx
       compiler: clang
+      env:
+        - MACOSX_DEPLOYMENT_TARGET=10.12
     
     - stage: rocksdb
       name: "RocksDB static OSX"
@@ -21,6 +23,7 @@ jobs:
       env:
         - INSTALL_PATH='/tmp/rocksdb'
         - RocksDBVersion='6.3.6'
+        - MACOSX_DEPLOYMENT_TARGET=10.12
     
     - name: "RocksDB static ubuntu gcc"
       if: commit_message =~ /rocksdb/
