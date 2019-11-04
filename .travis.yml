@@ -51,6 +51,14 @@ jobs:
       env:
         - BOOST_ROOT='/tmp/boost'
         - boostVersion='1.67'
+    - name: "boost 1.67 macos"
+      if: commit_message =~ /boost/
+      os: macos
+      compiler: clang
+      env:
+        - BOOST_ROOT='/tmp/boost'
+        - boostVersion='1.67'
+        - MACOSX_DEPLOYMENT_TARGET=10.12
 env:
   global:
     - STAGE_NAME=`echo "$TRAVIS_BUILD_STAGE_NAME" | awk '{print tolower($0)}'`
@@ -62,4 +70,4 @@ install:
   - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
   - aws --version
 script:
-  - aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$TRAVIS_COMPILER-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+  - aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$(uname)-$TRAVIS_COMPILER-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
