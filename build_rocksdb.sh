@@ -29,6 +29,7 @@ cd /tmp
 git clone https://github.com/facebook/rocksdb.git src
 cd src
 git checkout -qf "v$RocksDBVersion"
+export USE_RTTI=1
 export ROCKSDB_DISABLE_LZ4=1
 export ROCKSDB_DISABLE_SNAPPY=1
 export ROCKSDB_DISABLE_ZSTD=1
