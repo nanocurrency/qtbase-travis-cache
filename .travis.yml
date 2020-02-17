@@ -35,29 +35,29 @@ jobs:
         - RocksDBVersion='6.3.6'
     
     - stage: boost
-      name: "boost 1.67 ubuntu gcc"
+      name: "boost 1.70 ubuntu gcc"
       if: commit_message =~ /boost/
       os: linux
       distro: xenial
       compiler: gcc
       env:
         - BOOST_ROOT='/tmp/boost'
-        - boostVersion='1.67'
-    - name: "boost 1.67 ubuntu clang"
+        - boostVersion='1.70'
+    - name: "boost 1.70 ubuntu clang"
       if: commit_message =~ /boost/
       os: linux
       distro: xenial
       compiler: clang
       env:
         - BOOST_ROOT='/tmp/boost'
-        - boostVersion='1.67'
-    - name: "boost 1.67 macos"
+        - boostVersion='1.70'
+    - name: "boost 1.70 macos"
       if: commit_message =~ /boost/
       os: osx
       compiler: clang
       env:
         - BOOST_ROOT='/tmp/boost'
-        - boostVersion='1.67'
+        - boostVersion='1.70'
         - MACOSX_DEPLOYMENT_TARGET=10.12
 env:
   global:
@@ -70,4 +70,5 @@ install:
   - export PATH="$HOME/Library/Python/2.7/bin:$PATH";
   - aws --version
 script:
-  - aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$(uname)-$TRAVIS_COMPILER-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+  - if [[ $STAGE_NAME =~ "boost" ]]; then aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$boostVersion-$(uname)-$TRAVIS_COMPILER-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers; fi
+  - if [[ $STAGE_NAME =~ "qtbase|rocksdb" ]]; then aws s3 cp $TRAVIS_BUILD_DIR/$STAGE_NAME-*.tgz s3://$AWS_BUCKET/artifacts/$STAGE_NAME-$(uname)-$TRAVIS_COMPILER-latest.tgz --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers; fi
